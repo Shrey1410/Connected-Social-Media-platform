@@ -1,7 +1,7 @@
 const postmodel = require("../models/post.model")
 const utilscloudinary = require("../utils/cloudinary.utils")
+const user_model = require("../models/user.model")
 exports.createpost = async (req, res)=>{
-    console.log(req.body)
     const { description } = req.body;
     const postimage = req?.files?.image?.[0]?.path || undefined
     if(!description){
@@ -10,7 +10,14 @@ exports.createpost = async (req, res)=>{
         })
     }
     let post_img = null
+    try{
     if(postimage) post_img = await utilscloudinary.uploadoncloudinary(postimage)
+    }
+    catch(err){
+        res.status(500).send({
+            message : "Network Error Found"
+        })
+    }
     const post = await postmodel.create({
         post_image : post_img?.url,
         description : description,
@@ -27,7 +34,12 @@ exports.createpost = async (req, res)=>{
 }
 
 exports.getpostedbytheuser = async (req, res)=>{
-    const posts = await postmodel.find({createdBy : req.user._id}).populate("createdBy", "fullname profile_image")
+    const id = req.params.id
+    const page = req.query.page || 1
+    const limit = req.query.limit || 5
+    const skip = (page - 1) * limit
+    const post = await postmodel.find({createdBy : id})
+    const posts = await postmodel.find({createdBy : id}).populate("createdBy", "fullname profile_image Online").sort({createdAt : -1}).skip(skip).limit(limit)
     if(!posts){
         return res.status(500).send({
             message : "Error in getting posts"
@@ -35,10 +47,39 @@ exports.getpostedbytheuser = async (req, res)=>{
     }
     return res.status(200).send({
         message : "Posts fetched successfully",
-        posts
+        posts,
+        pagination : {
+            page,
+            limit,
+            totalPages : Math.ceil(post.length / limit),
+            totalResults : posts.length
+        }
     })
 }
 
-// exports.deletepost = async (req, res)=>{
-
-// }
+exports.getallposts = async (req, res)=>{
+    const page = req.query.page || 1
+    const limit = req.query.limit || 5
+    const skip = (page - 1) * limit
+    const user = await user_model.findById(req.user._id)
+    const friends = user.friends
+    const friendIds = friends.map(f => f.user_id);
+    friendIds.push(req.user._id)
+    const post = await postmodel.find({createdBy : {$in : friendIds}})
+    const posts = await postmodel.find({createdBy : {$in : friendIds}}).populate("createdBy", "fullname profile_image Online").sort({createdAt : -1}).skip(skip).limit(limit)
+    if(!posts){
+        return res.status(500).send({
+            message : "Error in getting posts"
+        })
+    }
+    return res.status(200).send({
+        message : "Posts fetched successfully",
+        posts,
+        pagination : {
+            page,
+            limit,
+            totalPages : Math.ceil(post.length / limit),
+            totalResults : posts.length
+        }
+    })
+}

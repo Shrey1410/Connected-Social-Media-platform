@@ -5,39 +5,92 @@ import { UserDataContext } from '../context/UserContext'
 import axios from 'axios'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-
+import { useEffect } from 'react'
+import { toast } from 'react-toastify'
+import PostSkeleton from './SkeletonUI'
+import NProgress from 'nprogress'
+import 'nprogress/nprogress.css'
+NProgress.configure({ showSpinner: false })
 const MainContent = () => {
-  const { user } = useContext(UserDataContext)
+  const { user , setUser } = useContext(UserDataContext)
   const [description, setDescription] = useState('')
   const [image, setImage] = useState(null)
+  const [page, setPage] = useState(1)
+  const [limit, setLimit] = useState(5)
+  const [posts, setPosts] = useState([])
+  const [hasMore, setHasMore] = useState(true)
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate()
+  let apiCalled = false;
+  const throttle = (fn, time) =>{
+    if(apiCalled) return;
+    apiCalled = true;
+    setTimeout(()=>{
+      fn()
+      apiCalled=false;
+    }, time);
+  }
+  useEffect(()=>{
+    const fetchPosts = async () => {
+      try {
+        setLoading(true)
+        await new Promise(resolve => setTimeout(resolve, 3000));
+        const res = await axios.get("http://localhost:8000/getallposts", {
+          params : {
+            page: page,
+            limit: limit
+          },
+          withCredentials: true
+        })
+        setPosts([...posts, ...res.data.posts])
+        if(res.data.posts.length < limit){
+          setHasMore(false)
+        }
+        setLoading(false);
+        if(page<res.data.pagination.totalPages) setPage(page+1);
+      } catch (err) {
+        console.log(err)
+        toast.error(err.response.data.message)
+      }
+      finally {
+        setLoading(false);
+      }
+    }
+    fetchPosts()
+  }, [page, user])
 
-  const handlePost = async (e)=>{
-    e.preventDefault()
-    try{
-        const formData = new FormData();
-        console.log(image)
-        if(image) formData.append('image', image);
-        formData.append('description', description)
-        console.log(formData)
-        console.log(formData.image)
-       const res = await axios.post('http://localhost:8000/createpost',formData,{headers: {
-        'Content-Type': 'multipart/form-data'
-      },
-      withCredentials: true
-    })
-    console.log('Upload successful:', res.data)
+  const handlePost = async () => {
+  const formData = new FormData();
+  if (image) formData.append('image', image);
+  formData.append('description', description);
+  try {
+    NProgress.start()
+      const res = await axios.post('http://localhost:8000/createpost', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        },
+        withCredentials: true
+      })
+      console.log(res)
+    navigate('/');
   } catch (err) {
     console.error('Upload failed:', err);
-    }
+    toast.error(err.response.data.message)
   }
+  finally{
+    NProgress.done()
+  }
+};
+
 
   return (
     <div className='bg-gray-100 p-5'>
         {/* Create Post */}
       <div className='bg-white p-4 rounded-2xl'>
         <div className='p-2 flex items-center space-x-2'>
-          <img className='rounded-full w-8 h-8' src={user?.profile_image ||"https://i.pinimg.com/736x/58/51/2e/58512eb4e598b5ea4e2414e3c115bef9.jpg"} alt="User Profile" />
-            <input className='px-4 py-2 bg-gray-100 rounded-3xl w-full' placeholder="What's on your mind?" type="text" onChange={(e)=>{
+          <img className='rounded-full w-8 h-8' src={user?.profile_image ||"https://static.thenounproject.com/png/3874124-200.png"} alt="User Profile" />
+          {user?.Online && <span className="w-2 h-2 bg-green-500 rounded-full inline-block"></span>}
+            <input className='px-4 py-2 bg-gray-100 rounded-3xl outline-none w-full' placeholder="What's on your mind?" value={description} type="text" onChange={(e)=>{
               e.preventDefault()
               setDescription(e.target.value)
             }}/>
@@ -91,17 +144,23 @@ const MainContent = () => {
       const file = e.target.files[0];
       setImage(file)
     }}
+    accept='image/*'
   />
 
   {/* Button */}
-  <button className="px-4 py-1 rounded-3xl border-2" onClick={handlePost}>Post</button>
+  <button className="px-4 py-1 rounded-3xl bg-blue-500 text-white font-semibold hover:bg-blue-800" onClick={(e)=>{
+    e.preventDefault()
+    throttle(handlePost, 5000)
+  }}>Post</button>
 </div>
       </div>
-        {/* Posts */} 
-        <Post/>
-        <Post/>
+        {posts.map((post) => {
+            return <Post key={post._id} post={post} />
+          })}
+        {
+          loading && <PostSkeleton/>
+        }
     </div>
   )
 }
-
 export default MainContent

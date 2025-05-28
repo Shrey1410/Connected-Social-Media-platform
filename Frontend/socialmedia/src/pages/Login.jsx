@@ -4,6 +4,7 @@ import { useState , useContext, useEffect} from 'react'
 import axios from 'axios'
 import { UserDataContext } from '../context/UserContext'
 import { Link } from 'react-router-dom'
+import { toast } from 'react-toastify'
 const Login = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -26,14 +27,15 @@ const Login = () => {
       const res = await axios.post('http://localhost:8000/login', data, {
         withCredentials: true,
       })
-      console.log(res)
       if(res.data.user){
         setUser(res.data.user)
+        toast.success(res.data.message)
         navigate('/home')
       }
     }
     catch(err){
       console.log(err)
+      toast.error(err.response.data.message)
     }
   }
 

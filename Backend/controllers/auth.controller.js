@@ -16,6 +16,13 @@ exports.signup = async (req, res)=>{
             message : "All fields are required"
         })
     }
+    const check_user1 = await user_schema.findOne({email : email})
+    const check_user2 = await user_schema.findOne({username : username})
+    if(check_user1 || check_user2){
+        return res.status(400).send({
+            message : "Username or email already exists"
+        })
+    }
     const user = await user_schema.create({
         fullname : fullname,
         username : username,
@@ -43,7 +50,8 @@ exports.signup = async (req, res)=>{
             username : user.username,
             email : user.email,
             profile_image : user.profile_image,
-            cover_image : user.cover_image
+            cover_image : user.cover_image,
+            Online : user.Online
         }
     })
 }
@@ -93,7 +101,8 @@ exports.login = async (req, res)=>{
             username : user.username,
             email : user.email,
             profile_image : user.profile_image,
-            cover_image : user.cover_image
+            cover_image : user.cover_image,
+            Online : user.Online
         }
     })
 }
@@ -120,7 +129,8 @@ exports.automaticlogin = async (req, res)=>{
             username : user.username,
             email : user.email,
             profile_image : user.profile_image,
-            cover_image : user.cover_image
+            cover_image : user.cover_image,
+            Online : user.Online
         }
     })
 }

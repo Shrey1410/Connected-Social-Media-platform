@@ -1,0 +1,67 @@
+import React, { useContext, useEffect } from 'react'
+import axios from 'axios'
+import { Link } from 'react-router-dom'
+import { UserDataContext } from '../context/UserContext'
+import { toast } from 'react-toastify'
+
+const User = (props) => {
+  const {user, setUser} = useContext(UserDataContext)
+  console.log(props.friend.user_id, props.friend)
+  const handleAccept = async () => {
+      try{
+      const response = await axios.post(`http://localhost:8000/friends/accept/${props.friend?.user_id?._id || props.friend?._id}`, {}, {
+        withCredentials: true,
+      });
+      setUser(response.data.user)
+      toast.success(response.data.message)
+    }
+    catch(err){
+      console.log(err)
+      toast.error(err.response.data.message)
+    }
+    }
+    const handleonrequest = async (e) => {
+        e.preventDefault();
+        try {
+            // Pass the friend_id as a URL parameter
+            const friendId = props.friend?.user_id?._id || props.friend?._id;
+            const res = await axios.post(
+                `http://localhost:8000/friends/request/${friendId}`,
+                {},  // Pass an empty object for the body if not required
+                {
+                  withCredentials: true,
+                }
+            );
+            setUser(res.data.user);
+            toast.success(res.data.message);
+        } catch (err) {
+            console.error("Error sending friend request:", err);
+            toast.error(err.response.data.message);
+        }
+      };
+  return (
+    <div>
+      <div className='flex items-center py-1 justify-between'>
+      <div className='flex items-center'>
+      <img className='rounded-full w-10 h-10' src={props.friend?.user_id?.profile_image|| props.friend?.profile_image ||"https://static.thenounproject.com/png/3874124-200.png"}
+      alt="User Profile"/>
+      <Link
+      className='px-3 text-lg'
+      to="/userprofile"
+      state={{ user: props.friend?.user_id || props.friend }}
+    >
+    {props.friend?.user_id?.fullname || props.friend?.fullname}
+    </Link>
+    
+      {props.friend.user_id?.Online && <span className="w-2 h-2 ml-2 bg-green-500 rounded-full inline-block"></span>}
+
+      </div>
+      <div>
+      {props.listType==='friendsuggestions' ?(<button className='p-2 bg-blue-500 hover:bg-blue-800 text-lg text-white rounded-2xl' onClick={handleonrequest}>Request</button>) :(props.listType==='friendrequests'? (<button className='p-2 bg-blue-500 hover:bg-blue-800 text-lg text-white rounded-2xl' onClick={handleAccept}>Accept</button>):(<></>))}
+      </div>
+    </div>
+    </div>
+  )
+}
+
+export default User

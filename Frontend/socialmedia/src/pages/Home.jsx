@@ -6,13 +6,16 @@ import RightSideBar from '../components/RightSideBar'
 import { useContext } from 'react'
 import { UserDataContext } from '../context/UserContext'
 import { useNavigate } from 'react-router-dom'
-
+import UserList from '../components/UserList'
+import { useState } from 'react'
 const Home = () => {
   const { user } = useContext(UserDataContext)
   const navigate = useNavigate()
   useEffect(()=>{
     if(!user) navigate('/')
   },[user])
+  const [userList, setUserList] = useState(false)
+  const [listType, setListType] = useState('')
   return (
     <div className='overflow-hidden h-screen flex flex-col'>
       <Navbar/>
@@ -21,13 +24,13 @@ const Home = () => {
       </div>
       <div className='flex justify-between overflow-hidden'>
         <div className='w-1/4 items-start'>
-          <LeftsideBar/>
+          <LeftsideBar setUserList={setUserList} userList={userList} listType={listType} setListType={setListType}/>
         </div>
         <div className='w-full md:w-2/4 overflow-y-auto'>
-          <MainContent/>
+          {userList ? (<><UserList listType={listType}/></>) : (<><MainContent/></>)}
         </div>
         <div className='w-1/4'>
-          <RightSideBar/>
+          <RightSideBar setUserList={setUserList} userList={userList} listType={listType} setListType={setListType}/>
         </div>
       </div>
     </div>

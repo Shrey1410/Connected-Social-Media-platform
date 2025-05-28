@@ -21,6 +21,7 @@ const uploadoncloudinary = async (localpath)=>{
     catch(err){
         console.log(err)
         console.log("error while uploading")
+        throw new Error("Network Error")
         fs.unlinkSync(localpath)
     }
 }

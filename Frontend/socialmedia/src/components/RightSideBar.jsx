@@ -1,29 +1,39 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import Friendssugg from './Friendssugg'
 import Friendrequests from './Friendrequests'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
-const RightSideBar = () => {
+import { UserDataContext } from '../context/UserContext'
+
+const RightSideBar = (props) => {
   const [friends, setFriends] = useState([])
   const [friendrequest, setFriendrequest] = useState([])
+  const { user, setUser } = useContext(UserDataContext)
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/friends/suggestions', {
+        const response = await axios.get('http://localhost:8000/friends/suggestions',{
+          params: {
+            page : 1,
+            limit : 5
+          },
           withCredentials: true,
         });
-        console.log(response.data.data);
         const frequest = await axios.get('http://localhost:8000/friends/requests', {
+          params:{
+            page : 1,
+            limit : 5
+          },
           withCredentials: true,
         })
-        setFriends(response.data.data);
-        setFriendrequest(frequest.data.data.friend_request);
+        setFriends(response.data.data)
+        setFriendrequest(frequest.data.data);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
     }
     fetchData();
-  }, [])
+  }, [user])
 
   return (
     <div className='m-4 '>
@@ -34,13 +44,17 @@ const RightSideBar = () => {
             <p className='font-semibold text-lg'>Friend's Suggestions</p>
           </div>
           <div>
-            {friends.map((friend) => (
-              <Friendssugg key={friend._id} friend={friend} />
-            ))}
+            {friends.map((friend) => {
+              return <Friendssugg key={friend._id} friend={friend} />
+            })}
           </div>
         </div>
       <div>
-        <p className='text-sm text-gray-400 p-1'>Show more</p>
+        <button className='text-sm text-gray-400 p-1 hover:text-gray-600' onClick={(e)=>{
+          e.preventDefault();
+          props.setUserList(!props.userList);
+          props.setListType('friendsuggestions');
+        }}>Show more or Less</button>
       </div>
       </div>
       <div className='bg-gray-200 h-[1px] m-2'></div>
@@ -51,13 +65,17 @@ const RightSideBar = () => {
             <p className='font-semibold text-lg'>Friend's Requests</p>
           </div>
           <div>
-            {friendrequest.map((friend) => (
-              <Friendrequests key={friend._id} friend={friend} />
-            ))}
+            {friendrequest.map((friend) => {
+              return <Friendrequests key={friend._id} friend={friend} />
+            })}
           </div>
         </div>
       <div>
-        <p className='text-sm text-gray-400 p-1'>Show more</p>
+        <button className='text-sm text-gray-400 p-1 hover:text-gray-600' onClick={(e)=>{
+          e.preventDefault();
+          props.setUserList(!props.userList);
+          props.setListType('friendrequests');
+        }}>Show more or Less</button>
       </div>
       </div>
     </div>

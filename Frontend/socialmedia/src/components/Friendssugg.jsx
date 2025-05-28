@@ -1,6 +1,12 @@
 import React from 'react'
 import axios from 'axios'
+import { UserDataContext } from '../context/UserContext';
+import { useContext } from 'react';
+import { toast } from 'react-toastify';
+import { Link } from 'react-router-dom';
+
 const Friendssugg = (props) => {
+  const {user, setUser} = useContext(UserDataContext)
   const handleonrequest = async (e) => {
     e.preventDefault();
     try {
@@ -10,12 +16,14 @@ const Friendssugg = (props) => {
             `http://localhost:8000/friends/request/${friendId}`,
             {},  // Pass an empty object for the body if not required
             {
-                withCredentials: true,
+              withCredentials: true,
             }
         );
-        console.log(res.data);
+        setUser(res.data.user);
+        toast.success(res.data.message);
     } catch (err) {
         console.error("Error sending friend request:", err);
+        toast.error(err.response.data.message);
     }
   };
   return (
@@ -24,10 +32,11 @@ const Friendssugg = (props) => {
       <img className='rounded-full w-8 h-8' src={props.friend.profile_image ||
         "https://static.thenounproject.com/png/3874124-200.png"
       } alt="User Profile"/>
-        <p className='px-3 text-sm'>{props.friend.fullname}</p>
+        <Link className='px-3 text-sm' to='/userprofile' state={{user : props.friend}}>{props.friend.fullname}</Link>
+      {props.friend.Online && <span className="w-2 h-2 bg-green-500 rounded-full inline-block"></span>}
       </div>
       <div>
-      <button className='p-2 bg-blue-800 text-sm text-white rounded-2xl' onClick={handleonrequest}>Request</button>
+      <button className='p-2 bg-blue-500 text-sm font-semibold text-white rounded-2xl hover:bg-blue-800' onClick={handleonrequest}>Request</button>
       </div>
     </div>
   )

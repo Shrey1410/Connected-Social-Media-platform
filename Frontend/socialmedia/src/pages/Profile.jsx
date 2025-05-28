@@ -6,53 +6,129 @@ import { UserDataContext } from '../context/UserContext'
 import axios from 'axios'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-
+import PostSkeleton from '../components/SkeletonUI'
+import FriendSkeleton from '../components/FriendSkeleton'
+import User from '../components/User'
+import NProgress from 'nprogress'
+import 'nprogress/nprogress.css'
+import { toast } from 'react-toastify'
+NProgress.configure({ showSpinner: false })
 const Profile = () => {
-  const { user } = useContext(UserDataContext)
+  const { user , setUser } = useContext(UserDataContext)
   const [ profileimage , setProfileimage] = useState(null)
   const [ coverimage , setCoverimage] = useState(null)
   const navigate = useNavigate()
   const [posts, setPosts] = useState([])
   const [description, setDescription] = useState('')
   const [image, setImage] = useState(null)
+  const [limit, setLimit] = useState(5)
+  const [page1, setPage1] = useState(1)
+  const [page2, setPage2] = useState(1)
+  const [hasMore, setHasMore] = useState(true)
+  const [loading, setLoading] = useState(false)
+  const [friends, setFriends] = useState([])
+  const [current, setCurrent] = useState('post')
+  let apiCalled=false;
+  const throttle = (fn, time) =>{
+    if(apiCalled) return;
+    apiCalled = true;
+    setTimeout(()=>{
+      fn()
+      apiCalled=false;
+    }, time);
+  }
+  useEffect(() => {
+  if(user) {
+    setPosts([]);
+    setPage1(1);
+    setPage2(1);
+    setHasMore(true);
+  }
+  }, [user]);
   useEffect(()=>{
+    if(!user) return 
     async function fetchposts(){
       try{
-      const res = await axios.get("http://localhost:8000/getpost", {
+      setLoading(true);
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      const res = await axios.get(`http://localhost:8000/getpost/${user.id}`, {
+        params: {
+          page: page1,
+          limit: limit
+        },
         withCredentials:true
       })
-      console.log(res.data.posts)
-      setPosts(res.data.posts)
+      setPosts(prev => page1 === 1 ? res.data.posts : [...prev, ...res.data.posts]);
+      if (res.data.posts.length < limit) {
+        setHasMore(false);
       }
+      setLoading(false);
+      if(page1<res.data.pagination.totalPages) setPage1(page1+1);
+    }
       catch(err){
         console.log(err)
+        toast.error(err.response.data.message)
+      }
+      finally{
+        setLoading(false);
       }
     }
-    fetchposts()
-  }, [])
+    if(current==='post') fetchposts()
+    async function fetchfriends(){
+      try {
+          setLoading(true);
+          await new Promise(resolve => setTimeout(resolve, 3000));
+          const response = await axios.get('http://localhost:8000/friends',{
+            params: {
+              page : page2,
+              limit : limit
+            },
+            withCredentials: true,
+          });
+          console.log(response)
+          const new_friends = response.data.data;
+          setFriends([...friends, ...new_friends]);
+          console.log(friends)
+          if (new_friends.length < limit) {
+            setHasMore(false);
+          }
+          setLoading(false);
+          if(page2<response.data.pagination.totalPages) setPage2(page2+1);
+        } catch (error) {
+          console.error('Error fetching data:', error);
+          toast.error(error.response.data.message)
+        } finally{
+          setLoading(false);
+        }
+    }
+    if(current==='friend') fetchfriends()
+  }, [page2, page1, user, current])
 
-  const handlePost = async (e)=>{
-    e.preventDefault()
+  const handlePost = async ()=>{
     try{
+      NProgress.start()
         const formData = new FormData();
-        console.log(image)
         if(image) formData.append('image', image);
         formData.append('description', description)
-        console.log(formData)
-        console.log(formData.image)
        const res = await axios.post('http://localhost:8000/createpost',formData,{headers: {
         'Content-Type': 'multipart/form-data'
       },
       withCredentials: true
     })
-    console.log('Upload successful:', res.data)
+    navigate('/')
   } catch (err) {
     console.error('Upload failed:', err);
+    toast.error(err.response.data.message)
+    }
+    finally{
+      NProgress.done()
     }
   }
 
   const handleprofileimage = async ()=>{
+
     try{
+      NProgress.start()
         const formData = new FormData();
         formData.append('profileimage', profileimage);
         console.log(formData)
@@ -62,25 +138,36 @@ const Profile = () => {
       withCredentials: true
     })
     console.log('Upload successful:', res.data);
+    setUser(res.data.user)
     navigate('/')
-  } catch (err) {
+    } catch (err) {
     console.error('Upload failed:', err);
+    toast.error(err.response.data.msg)
+    }
+    finally{
+      NProgress.done()
     }
     }
 
     const handlecoverimage = async ()=>{
     try{
+      NProgress.start()
         const formData = new FormData();
-        formData.append('coverimage', coverimage); // must match field name expected by multer
+        formData.append('coverimage', coverimage)
        const res = await axios.post('http://localhost:8000/upload/coverimage',formData,{headers: {
         'Content-Type': 'multipart/form-data'
-      },
+       },
       withCredentials: true
     })
     console.log('Upload successful:', res.data);
+    setUser(res.data.user)
     navigate('/')
   } catch (err) {
     console.error('Upload failed:', err);
+    toast.error(err.response.data.message)
+    }
+    finally{
+      NProgress.done()
     }
     }
 
@@ -108,11 +195,9 @@ const Profile = () => {
           </div>
           
           {/* Name and Button */}
-          <div className='flex items-center justify-between px-5 md:px-10 pt-15'>
+          <div className='flex items-center justify-start px-5 md:px-10 pt-15'>
             <p className='text-lg font-semibold px-2'>{user?.fullname}</p>
-            <button className='px-4 py-2 bg-blue-800 rounded-2xl text-white font-semibold hover:bg-blue-700'>
-              Follow
-            </button>
+            {user?.Online && <span className="w-2 h-2 bg-green-500 rounded-full inline-block"></span>}
           </div>
           {/* Bio */}
           <div className="flex flex-col px-5 md:px-10 my-4 space-y-4">
@@ -122,13 +207,17 @@ const Profile = () => {
           type="file"
           className="w-full max-w-xs text-slate-500 font-medium text-base bg-gray-100
              file:cursor-pointer file:border-0 file:py-2.5 file:px-4 file:mr-4
-             file:bg-blue-800 file:hover:bg-gray-700 file:text-white rounded"
+             file:bg-blue-500 file:hover:bg-blue-800 file:text-white rounded"
              onChange={(e)=>{
               e.preventDefault()
               setProfileimage(e.target.files[0])
              }}
+             accept='image/*'
          />
-         <button className='px-4 py-1 rounded-3xl bg-blue-800 text-white' onClick={handleprofileimage}>Upload</button>
+         <button className='px-4 py-1 rounded-3xl bg-blue-500 hover:bg-blue-800 text-white' onClick={(e)=>{
+          e.preventDefault()
+          throttle(handleprofileimage, 5000)
+         }}>Upload</button>
          </div>
 
         <div className="flex items-center justify-start space-x-2">
@@ -137,20 +226,30 @@ const Profile = () => {
         type="file"
         className="w-full max-w-xs text-slate-500 font-medium text-base bg-gray-100
              file:cursor-pointer file:border-0 file:py-2.5 file:px-4 file:mr-4
-             file:bg-blue-800 file:hover:bg-gray-700 file:text-white rounded"
+             file:bg-blue-500 file:hover:bg-blue-800 file:text-white rounded"
              onChange = {(e)=>{
               e.preventDefault()
               setCoverimage(e.target.files[0])
              }}
+             accept="image/*"
         />
-        <button className='px-4 py-1 rounded-3xl bg-blue-800 text-white' onClick={handlecoverimage}>Upload</button>
+        <button className='px-4 py-1 rounded-3xl bg-blue-500 hover:bg-blue-800 text-white' onClick={(e)=>{
+          e.preventDefault()
+          throttle(handlecoverimage, 5000)
+        }}>Upload</button>
         </div>
       </div>
 
           {/* Tabs */}
           <div className='flex items-start px-5 md:px-10 my-4 space-x-4'>
-            <button className='bg-blue-500 px-4 py-2 rounded-full text-white font-medium'>Posts</button>
-            <button className='text-gray-600 border-2 rounded-full px-4 py-2  border-gray-100 hover:text-blue-600 font-medium'>Friends</button>
+            <button className='bg-blue-500 px-4 py-2 rounded-full text-white hover:bg-blue-800 font-medium'onClick={(e)=>{
+              e.preventDefault()
+              setCurrent('post')
+            }}>Posts</button>
+            <button className='text-gray-600 border-2 rounded-full px-4 py-2  border-gray-100 hover:text-blue-600 font-medium' onClick={(e)=>{
+              e.preventDefault()
+              setCurrent('friend')
+            }}>Friends</button>
           </div>
         </div>
 
@@ -170,6 +269,7 @@ const Profile = () => {
                 e.preventDefault()
                 setDescription(e.target.value)
               }}
+              accept='image/*'
             />
           </div>
           <div className="p-2 flex justify-between items-center">
@@ -220,24 +320,46 @@ const Profile = () => {
     onChange={(e) => {
       const file = e.target.files[0];
       if (file) {
-        console.log("Selected file:", file.name)
         setImage(file);
       }
     }}
   />
 
   {/* Button */}
-  <button className="px-4 py-1 rounded-3xl border-2" onClick={handlePost}>Post</button>
+  <button className="px-4 py-1 rounded-3xl text-white font-semibold hover:bg-blue-800 bg-blue-500" onClick={(e)=>{
+    e.preventDefault()
+    throttle(handlePost, 5000)
+  }}>Post</button>
 </div>
 
         </div>
 
         {/* Posts */}
+        {current==='post'?(
+        <>
         <div>
-          {posts.map((post) => (
-            <Post key={post._id} post={post} />
-          ))}
+          {posts.map((post) => {
+          return <Post key={post._id} post={post} />
+          })}
         </div>
+        {loading && (
+          <PostSkeleton/>
+        )}
+        </>):<></>}
+        {current==='friend'?(
+          <div className='bg-gray-100 p-2'>
+        {/* Create Post */}
+      <div className='bg-white p-4 rounded-2xl'>
+      {friends && friends.length > 0 ? (
+      friends.map((friend) => (
+      <User key={friend._id} friend={friend} listType={"friends"} />
+      ))
+      ) : ( friends && friends.length == 0 &&
+      !loading && <p className="text-gray-500 text-center">No Friends and Request found</p>
+      )}
+      </div>
+      {loading && friends.length === 0 && <FriendSkeleton />}
+    </div>):<></>}
       </div>
     </div>
   )

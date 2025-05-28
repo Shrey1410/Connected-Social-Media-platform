@@ -8,5 +8,7 @@ module.exports = (app)=>{
             }
         ])], post_controller.createpost)
 
-    app.get("/getpost", [auth_middleware.checkauth], post_controller.getpostedbytheuser)
+    app.get("/getpost/:id", [auth_middleware.checkauth], post_controller.getpostedbytheuser)
+
+    app.get("/getallposts", [auth_middleware.checkauth], post_controller.getallposts)
 }

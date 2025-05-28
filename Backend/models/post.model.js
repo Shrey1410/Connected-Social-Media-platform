@@ -18,14 +18,19 @@ const post_schema = mongoose.Schema({
     }],
     comments : [
         {
-            type : mongoose.Schema.Types.ObjectId,
-            ref : "user",
+            user_id : {
+                type : mongoose.Schema.Types.ObjectId,
+                ref : "user",
+                required : true
+            },
             description : {
                 type : String,
                 required : true
             }
         }
     ]
+}, {
+    timestamps : true
 })
 
 module.exports = mongoose.model("post", post_schema);

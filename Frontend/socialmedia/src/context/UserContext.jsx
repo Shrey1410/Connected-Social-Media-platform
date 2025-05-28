@@ -8,7 +8,7 @@ const UserProvider = ({children})=>{
     useEffect(()=>{
         const checkifUser = async ()=>{
           try{
-            const res =await axios.get('http://localhost:8000/user',{
+            const res = await axios.get('http://localhost:8000/user',{
               withCredentials: true,
             })
             if(res.data.user){
@@ -28,5 +28,4 @@ const UserProvider = ({children})=>{
         </UserDataContext.Provider>
     )
 }
-
 export default UserProvider

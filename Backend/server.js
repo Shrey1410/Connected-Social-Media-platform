@@ -6,7 +6,8 @@ const { URI } = require('./configs/db.config')
 const cookie = require('cookie-parser')
 const cookieParser = require('cookie-parser')
 const cors = require('cors')
-
+const http = require('http');
+const initializeSocket = require('./socket');
 mongoose.connect(URI)
 const db = mongoose.connection
 
@@ -23,10 +24,15 @@ app.use(cors({
     origin: 'http://localhost:5173',
     credentials: true,
 }))
+
+const server = http.createServer(app)
+initializeSocket(server)
 require('./routes/auth.routes')(app)
 require('./routes/profile.routes')(app)
 require('./routes/post.routes')(app)
 require('./routes/friends.routes')(app)
-app.listen(PORT, () => {
+require('./routes/likes.routes')(app)
+require('./routes/comments.routes')(app)
+server.listen(PORT, () => {
     console.log('Server is running on port', PORT)
 })

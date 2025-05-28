@@ -8,7 +8,8 @@ const user_schema = mongoose.Schema({
     username : {
         type: String,
         minlength : 4,
-        required : true
+        required : true,
+        unique : true
     },
     password : {
         type: String,
@@ -19,7 +20,8 @@ const user_schema = mongoose.Schema({
     email : {
         type: String,
         minlength : 8,
-        required : true
+        required : true,
+        unique : true
     },
     cover_image :{
         type:String //uri
@@ -33,11 +35,6 @@ const user_schema = mongoose.Schema({
                 type: mongoose.Schema.Types.ObjectId,
                 ref : "user"
             },
-            status : {
-                type: String,
-                enum : ["pending", "accepted"],
-                default : "pending"
-            }
         }
     ],
     friends : [
@@ -47,7 +44,19 @@ const user_schema = mongoose.Schema({
                 ref : "user"
             }
         }
-    ]
+    ],
+    friend_requests_sent : [
+        {
+            user_id : {
+                type: mongoose.Schema.Types.ObjectId,
+                ref : "user"
+            }
+        }
+    ],
+    Online : {
+        type: Boolean,
+        default : false
+    },
 })
 
 module.exports = mongoose.model("user",user_schema)
