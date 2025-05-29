@@ -6,12 +6,12 @@ import { toast } from 'react-toastify'
 
 const User = (props) => {
   const {user, setUser} = useContext(UserDataContext)
-  console.log(props.friend.user_id, props.friend)
   const handleAccept = async () => {
       try{
       const response = await axios.post(`http://localhost:8000/friends/accept/${props.friend?.user_id?._id || props.friend?._id}`, {}, {
         withCredentials: true,
       });
+      console.log(response.data)
       setUser(response.data.user)
       toast.success(response.data.message)
     }
@@ -32,6 +32,7 @@ const User = (props) => {
                   withCredentials: true,
                 }
             );
+            console.log(res.data)
             setUser(res.data.user);
             toast.success(res.data.message);
         } catch (err) {

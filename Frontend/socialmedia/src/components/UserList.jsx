@@ -16,9 +16,10 @@ const UserList = (props) => {
     useEffect(()=>{
       setFriends([])
       setHasMore(true)
-      setPage(1)
+      setPage(0)
     },[user])
     useEffect(()=>{
+      if(page==0) setPage(1)
       const fetchDatafriends = async () => {
         try {
           setLoading(true);
@@ -32,14 +33,14 @@ const UserList = (props) => {
           });
           const new_friends = response.data.data;
           setFriends([...friends, ...new_friends]);
-          if (new_friends.length < limit) {
+          if(new_friends.length<limit) {
             setHasMore(false);
           }
           setLoading(false);
           if(page<response.data.pagination.totalPages) setPage(page+1);
-        } catch (error) {
+        }catch (error){
           console.error('Error fetching data:', error);
-        } finally{
+        }finally{
           setLoading(false);
         }
       }
@@ -73,7 +74,6 @@ const UserList = (props) => {
       const fetchDatafriendsuggestions = async () => {
         try {
           setLoading(true);
-          
         await new Promise(resolve => setTimeout(resolve, 3000));
           const response = await axios.get('http://localhost:8000/friends/suggestions',{
             params: {
@@ -124,7 +124,7 @@ const UserList = (props) => {
         }
       }
       if(props.listType=='pending') fetchpendingfriendsrequests();
-    }, [page, user])
+    }, [page])
   return (
     <div className='bg-gray-100 p-5'>
         {/* Create Post */}
