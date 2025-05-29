@@ -4,6 +4,7 @@ import Friendrequests from './Friendrequests'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { UserDataContext } from '../context/UserContext'
+import REACT_APP_BASE_URL from '../config'
 
 const RightSideBar = (props) => {
   const [friends, setFriends] = useState([])
@@ -12,14 +13,14 @@ const RightSideBar = (props) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/friends/suggestions',{
+        const response = await axios.get(`${REACT_APP_BASE_URL}/friends/suggestions`,{
           params: {
             page : 1,
             limit : 5
           },
           withCredentials: true,
         });
-        const frequest = await axios.get('http://localhost:8000/friends/requests', {
+        const frequest = await axios.get(`${REACT_APP_BASE_URL}/friends/requests`, {
           params:{
             page : 1,
             limit : 3

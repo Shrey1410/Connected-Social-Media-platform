@@ -3,12 +3,13 @@ import axios from 'axios'
 import { Link } from 'react-router-dom'
 import { UserDataContext } from '../context/UserContext'
 import { toast } from 'react-toastify'
+import REACT_APP_BASE_URL from '../config'
 
 const User = (props) => {
   const {user, setUser} = useContext(UserDataContext)
   const handleAccept = async () => {
       try{
-      const response = await axios.post(`http://localhost:8000/friends/accept/${props.friend?.user_id?._id || props.friend?._id}`, {}, {
+      const response = await axios.post(`${REACT_APP_BASE_URL}/friends/accept/${props.friend?.user_id?._id || props.friend?._id}`, {}, {
         withCredentials: true,
       });
       console.log(response.data)
@@ -26,7 +27,7 @@ const User = (props) => {
             // Pass the friend_id as a URL parameter
             const friendId = props.friend?.user_id?._id || props.friend?._id;
             const res = await axios.post(
-                `http://localhost:8000/friends/request/${friendId}`,
+                `${REACT_APP_BASE_URL}/friends/request/${friendId}`,
                 {},  // Pass an empty object for the body if not required
                 {
                   withCredentials: true,

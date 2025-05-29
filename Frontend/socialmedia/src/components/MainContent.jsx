@@ -11,6 +11,7 @@ import PostSkeleton from './SkeletonUI'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 NProgress.configure({ showSpinner: false })
+import REACT_APP_BASE_URL from '../config'
 const MainContent = () => {
   const { user , setUser } = useContext(UserDataContext)
   const [description, setDescription] = useState('')
@@ -35,7 +36,7 @@ const MainContent = () => {
       try {
         setLoading(true)
         await new Promise(resolve => setTimeout(resolve, 3000));
-        const res = await axios.get("http://localhost:8000/getallposts", {
+        const res = await axios.get(`${REACT_APP_BASE_URL}/getallposts`, {
           params : {
             page: page,
             limit: limit
@@ -65,7 +66,7 @@ const MainContent = () => {
   formData.append('description', description);
   try {
     NProgress.start()
-      const res = await axios.post('http://localhost:8000/createpost', formData, {
+      const res = await axios.post(`${REACT_APP_BASE_URL}/createpost`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         },

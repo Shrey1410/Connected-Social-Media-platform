@@ -4,7 +4,7 @@ import { UserDataContext } from '../context/UserContext';
 import { useContext } from 'react';
 import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
-
+import REACT_APP_BASE_URL from '../config'
 const Friendssugg = (props) => {
   const {user, setUser} = useContext(UserDataContext)
   const handleonrequest = async (e) => {
@@ -13,7 +13,7 @@ const Friendssugg = (props) => {
         // Pass the friend_id as a URL parameter
         const friendId = props.friend._id;
         const res = await axios.post(
-            `http://localhost:8000/friends/request/${friendId}`,
+            `${REACT_APP_BASE_URL}/friends/request/${friendId}`,
             {},  // Pass an empty object for the body if not required
             {
               withCredentials: true,

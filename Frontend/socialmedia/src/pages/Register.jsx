@@ -5,6 +5,8 @@ import axios from 'axios'
 import { useContext } from 'react'
 import { UserDataContext } from '../context/UserContext'
 import { useEffect } from 'react'
+import REACT_APP_BASE_URL from '../config'
+
 import { toast } from 'react-toastify'
 const Register = () => {
   const [fullName, setFullName] = useState('')
@@ -32,7 +34,7 @@ const Register = () => {
       password : password,
     }
     try{
-      const res = await axios.post('http://localhost:8000/signup', data, {
+      const res = await axios.post(`${REACT_APP_BASE_URL}/signup`, data, {
         withCredentials: true,
       })
       setUser(res.data.user)

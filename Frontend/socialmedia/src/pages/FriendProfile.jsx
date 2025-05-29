@@ -6,6 +6,8 @@ import axios from 'axios'
 import { useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import PostSkeleton from '../components/SkeletonUI'
+import REACT_APP_BASE_URL from '../config'
+
 const FriendProfile = () => {
   const navigate = useNavigate()
   const [posts, setPosts] = useState([])
@@ -14,13 +16,14 @@ const FriendProfile = () => {
   const [hasMore, setHasMore] = useState(true)
   const [loading, setLoading] = useState(false);
   const location = useLocation()
-  const user = location.state?.user
+  const user = location.state?.user 
+  
   useEffect(()=>{
     async function fetchposts(){
       try{
       setLoading(true);
       await new Promise(resolve => setTimeout(resolve, 3000));
-      const res = await axios.get(`http://localhost:8000/getpost/${user?.id || user._id}`, {
+      const res = await axios.get(`${REACT_APP_BASE_URL}/getpost/${user?.id || user._id}`, {
         params: {
           page: page,
           limit: limit

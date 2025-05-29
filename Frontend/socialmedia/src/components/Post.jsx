@@ -7,6 +7,7 @@ import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 import { toast } from 'react-toastify'
 NProgress.configure({ showSpinner: false })
+import REACT_APP_BASE_URL from '../config'
 
 const Post = (props) => {
     const [onlike, setOnlike] = useState(false);  
@@ -25,7 +26,7 @@ const Post = (props) => {
         const postId = post?._id;
         try{
            NProgress.start()
-           const res = await axios.post(`http://localhost:8000/like/post/${postId}`,{},{
+           const res = await axios.post(`${REACT_APP_BASE_URL}/like/post/${postId}`,{},{
             withCredentials: true
         })
         setPost(res.data.post)

@@ -6,6 +6,8 @@ import { useContext } from 'react'
 import { UserDataContext } from '../context/UserContext'
 import FriendSkeleton from './FriendSkeleton'
 import { toast } from 'react-toastify'
+import REACT_APP_BASE_URL from '../config'
+
 const UserList = (props) => {
   const [friends, setFriends] = useState([])
   const [page , setPage] = useState(1);
@@ -24,7 +26,7 @@ const UserList = (props) => {
         try {
           setLoading(true);
         await new Promise(resolve => setTimeout(resolve, 3000));
-          const response = await axios.get('http://localhost:8000/friends',{
+          const response = await axios.get(`${REACT_APP_BASE_URL}/friends`,{
             params: {
               page : page,
               limit : limit
@@ -50,7 +52,7 @@ const UserList = (props) => {
           setLoading(true);
           
         await new Promise(resolve => setTimeout(resolve, 3000));
-          const response = await axios.get('http://localhost:8000/friends/requests',{
+          const response = await axios.get(`${REACT_APP_BASE_URL}/friends/requests`,{
             params: {
               page : page,
               limit : limit
@@ -75,7 +77,7 @@ const UserList = (props) => {
         try {
           setLoading(true);
         await new Promise(resolve => setTimeout(resolve, 3000));
-          const response = await axios.get('http://localhost:8000/friends/suggestions',{
+          const response = await axios.get(`${REACT_APP_BASE_URL}/friends/suggestions`,{
             params: {
               page : page,
               limit : limit
@@ -101,7 +103,7 @@ const UserList = (props) => {
           setLoading(true);
           console.log(page)
         await new Promise(resolve => setTimeout(resolve, 3000));
-          const response = await axios.get('http://localhost:8000/pending/requests',{
+          const response = await axios.get(`${REACT_APP_BASE_URL}/pending/requests`,{
             params: {
               page : page,
               limit : limit

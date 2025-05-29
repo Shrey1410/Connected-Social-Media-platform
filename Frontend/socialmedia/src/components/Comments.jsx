@@ -3,6 +3,7 @@ import { useState } from 'react'
 import axios from 'axios'
 import { useEffect } from 'react'
 import FriendSkeleton from './FriendSkeleton'
+import REACT_APP_BASE_URL from '../config'
 const Comments = (props) => {
   const [comment, setComment] = useState('')
   const [allcomments, setallcomments] = useState([])
@@ -11,7 +12,7 @@ const Comments = (props) => {
       try{
       setLoading(true)
       await new Promise(resolve => setTimeout(resolve, 3000));
-      const res = await axios.get(`http://localhost:8000/comment/getcomments/${props.postId}`,{
+      const res = await axios.get(`${REACT_APP_BASE_URL}/comment/getcomments/${props.postId}`,{
         withCredentials : true
       })
       setallcomments(res.data.comments)
@@ -28,7 +29,7 @@ const Comments = (props) => {
   const handlecreatecomment = async (e)=>{
     e.preventDefault()
     try{
-    const res = await axios.post(`http://localhost:8000/createcomments/${props.postId}`,{
+    const res = await axios.post(`${REACT_APP_BASE_URL}/createcomments/${props.postId}`,{
       comment : comment
     },{
       withCredentials : true

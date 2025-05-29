@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { UserDataContext } from '../context/UserContext'
 import { toast } from 'react-toastify'
 import { SocketDataContext } from '../context/SocketContext'
+import REACT_APP_BASE_URL from '../config'
 const LeftsideBar = (props) => {
   const navigate = useNavigate()
   const {socket} = useContext(SocketDataContext)
@@ -11,7 +12,7 @@ const LeftsideBar = (props) => {
   const onhandlelogout = async (e) => {
     e.preventDefault()
     try{
-      const res = await axios.get('http://localhost:8000/logout',
+      const res = await axios.get(`${REACT_APP_BASE_URL}/logout`,
         { withCredentials: true }
       )
       toast.success(res.data.message)

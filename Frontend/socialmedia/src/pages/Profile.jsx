@@ -13,6 +13,8 @@ import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 import { toast } from 'react-toastify'
 NProgress.configure({ showSpinner: false })
+import REACT_APP_BASE_URL from '../config'
+
 const Profile = () => {
   const { user , setUser } = useContext(UserDataContext)
   const [ profileimage , setProfileimage] = useState(null)
@@ -51,7 +53,7 @@ const Profile = () => {
       try{
       setLoading(true);
       await new Promise(resolve => setTimeout(resolve, 3000));
-      const res = await axios.get(`http://localhost:8000/getpost/${user.id}`, {
+      const res = await axios.get(`${REACT_APP_BASE_URL}/getpost/${user.id}`, {
         params: {
           page: page1,
           limit: limit
@@ -78,7 +80,7 @@ const Profile = () => {
       try {
           setLoading(true);
           await new Promise(resolve => setTimeout(resolve, 3000));
-          const response = await axios.get('http://localhost:8000/friends',{
+          const response = await axios.get(`${REACT_APP_BASE_URL}/friends`,{
             params: {
               page : page2,
               limit : limit
@@ -110,7 +112,7 @@ const Profile = () => {
         const formData = new FormData();
         if(image) formData.append('image', image);
         formData.append('description', description)
-       const res = await axios.post('http://localhost:8000/createpost',formData,{headers: {
+       const res = await axios.post(`${REACT_APP_BASE_URL}/createpost`,formData,{headers: {
         'Content-Type': 'multipart/form-data'
       },
       withCredentials: true
@@ -132,7 +134,7 @@ const Profile = () => {
         const formData = new FormData();
         formData.append('profileimage', profileimage);
         console.log(formData)
-       const res = await axios.post('http://localhost:8000/upload/profileimage',formData,{headers: {
+       const res = await axios.post(`${REACT_APP_BASE_URL}/upload/profileimage`,formData,{headers: {
         'Content-Type': 'multipart/form-data'
       },
       withCredentials: true
@@ -154,7 +156,7 @@ const Profile = () => {
       NProgress.start()
         const formData = new FormData();
         formData.append('coverimage', coverimage)
-       const res = await axios.post('http://localhost:8000/upload/coverimage',formData,{headers: {
+       const res = await axios.post(`${REACT_APP_BASE_URL}/upload/coverimage`,formData,{headers: {
         'Content-Type': 'multipart/form-data'
        },
       withCredentials: true

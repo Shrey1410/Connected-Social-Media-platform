@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useContext } from 'react'
 import { UserDataContext } from '../context/UserContext'
 import axios from 'axios'
+import REACT_APP_BASE_URL from '../config'
 import Dropdownmenu from './Dropdownmenu'
 const Navbar = () => {
 const { user } = useContext(UserDataContext)
@@ -11,7 +12,7 @@ const [searchResults, setSearchResults] = useState([])
 useEffect(()=>{
   const fetchsearchresults = async ()=>{
     try{
-    const res = await axios.get(`http://localhost:8000/search/friend/${search}`, {
+    const res = await axios.get(`${REACT_APP_BASE_URL}/search/friend/${search}`, {
       withCredentials: true
     }) 
     console.log(res)

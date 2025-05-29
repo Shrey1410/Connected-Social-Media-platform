@@ -3,12 +3,12 @@ import axios from 'axios'
 import { UserDataContext } from '../context/UserContext'
 import { toast } from 'react-toastify'
 import { Link } from 'react-router-dom'
-
+import REACT_APP_BASE_URL from '../config'
 const Friendrequests = (props) => {
   const {user, setUser} = useContext(UserDataContext)
   const handleAccept = async () => {
     try{
-    const response = await axios.post(`http://localhost:8000/friends/accept/${props.friend.user_id._id}`, {}, {
+    const response = await axios.post(`${REACT_APP_BASE_URL}/friends/accept/${props.friend.user_id._id}`, {}, {
       withCredentials: true,
     });
     toast.success(response.data.message)

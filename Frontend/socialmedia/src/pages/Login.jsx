@@ -5,12 +5,13 @@ import axios from 'axios'
 import { UserDataContext } from '../context/UserContext'
 import { Link } from 'react-router-dom'
 import { toast } from 'react-toastify'
+import REACT_APP_BASE_URL from '../config'
+
 const Login = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const {user, setUser} = useContext(UserDataContext)
   const navigate = useNavigate()
-
   useEffect(()=>{
     if(user){
       navigate('/home')
@@ -24,7 +25,7 @@ const Login = () => {
       password : password,
     }
     try{
-      const res = await axios.post('http://localhost:8000/login', data, {
+      const res = await axios.post(`${REACT_APP_BASE_URL}/login`, data, {
         withCredentials: true,
       })
       if(res.data.user){
