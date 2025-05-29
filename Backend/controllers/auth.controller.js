@@ -1,7 +1,10 @@
 const user_schema = require('../models/user.model')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
-const {SALT, JWT_SECRET} = require('../configs/security.config')
+// const {SALT, JWT_SECRET} = require('../configs/security.config')
+require('dotenv').config()
+const SALT = process.env.SALT
+const JWT_SECRET = process.env.JWT_SECRET
 const {validationResult} = require('express-validator')
 exports.signup = async (req, res)=>{
     const {fullname, username, email, password} = req.body

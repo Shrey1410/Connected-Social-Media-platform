@@ -1,5 +1,7 @@
 const jwt = require("jsonwebtoken")
-const { JWT_SECRET } = require("../configs/security.config")
+// const { JWT_SECRET } = require("../configs/security.config")
+require("dotenv").config()
+const JWT_SECRET = process.env.JWT_SECRET
 const user_model = require("../models/user.model")
 exports.checkauth = async (req, res, next) => {
     const token = req.cookies.token

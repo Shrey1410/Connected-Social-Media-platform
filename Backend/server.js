@@ -1,8 +1,11 @@
 const express = require('express');
 const app = express()
-const {PORT} = require('./configs/server.config')
+// const {PORT} = require('./configs/server.config')
+require('dotenv').config()
+const PORT = process.env.PORT
 const mongoose = require('mongoose')
-const { URI } = require('./configs/db.config')
+// const { URI } = require('./configs/db.config')
+const URI = process.env.URI
 const cookie = require('cookie-parser')
 const cookieParser = require('cookie-parser')
 const cors = require('cors')
