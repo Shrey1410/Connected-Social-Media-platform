@@ -1,10 +1,11 @@
 const cloudinary = require('cloudinary').v2;
 const fs = require('fs');
-// const { cloud_name, api_key, api_secret } = require('../configs/cloudinary.config')
-require('dotenv').config()
-const cloud_name = process.env.cloud_name
-const api_key = process.env.api_key
-const api_secret = process.env.api_secret
+const { cloud_name, api_key, api_secret } = require('../configs/cloudinary.config')
+// require('dotenv').config()
+// const cloud_name = process.env.cloud_name
+// const api_key = process.env.api_key
+// const api_secret = process.env.api_secret
+console.log(api_key)
 cloudinary.config({
   cloud_name: cloud_name,
   api_key: api_key,
