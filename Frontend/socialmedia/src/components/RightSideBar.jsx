@@ -22,7 +22,7 @@ const RightSideBar = (props) => {
         const frequest = await axios.get('http://localhost:8000/friends/requests', {
           params:{
             page : 1,
-            limit : 5
+            limit : 3
           },
           withCredentials: true,
         })
