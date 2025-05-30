@@ -5,7 +5,7 @@ require('dotenv').config()
 const PORT = process.env.PORT
 const mongoose = require('mongoose')
 // const { URI } = require('./configs/db.config')
-const FRONTEND_URL = process.env.FRONTEND_URL
+const FRONTEND_URL = process.env.FRONTEND_URL || "https://connected-social-media-platform-nmh.vercel.app"
 const URI = process.env.URI
 const cookie = require('cookie-parser')
 const cookieParser = require('cookie-parser')

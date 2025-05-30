@@ -1,7 +1,7 @@
 const { Server } = require('socket.io');
 const user_model = require('./models/user.model');
 const map = new Map()
-const FRONTEND_URL = process.env.FRONTEND_URL
+const FRONTEND_URL = process.env.FRONTEND_URL || "https://connected-social-media-platform-nmh.vercel.app"
 function initializeSocket(server) {
     const io = new Server(server, {
         cors: {
