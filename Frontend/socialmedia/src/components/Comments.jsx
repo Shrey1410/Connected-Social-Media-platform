@@ -72,8 +72,8 @@ const Comments = (props) => {
       src={comment.user_id.profile_image || "https://i.pinimg.com/736x/58/51/2e/58512eb4e598b5ea4e2414e3c115bef9.jpg"}
       alt="User Profile"
     />
+    {comment.user_id.Online && <span className="w-2 h-2 bg-green-500 rounded-full inline-block"></span>}
   </div>
-  {comment.user_id.Online && <span className="w-2 h-2 bg-green-500 rounded-full inline-block"></span>}
   {/* Comment Bubble */}
   <div className='bg-gray-100 rounded-2xl px-4 py-2 w-full'>
       <p className='text-sm break-words whitespace-pre-wrap' key={comment._id}>
