@@ -1,10 +1,11 @@
 const { Server } = require('socket.io');
 const user_model = require('./models/user.model');
 const map = new Map()
+const FRONTEND_URL = process.env.FRONTEND_URL
 function initializeSocket(server) {
     const io = new Server(server, {
         cors: {
-            origin: 'http://localhost:5173',
+            origin: `${FRONTEND_URL}`,
             credentials: true,
         },
     });

@@ -3,7 +3,8 @@ import { useContext } from 'react'
 import { createContext, useState, useEffect } from 'react'
 export const SocketDataContext = createContext()
 import io from 'socket.io-client'
-const socket = io('http://localhost:8000')
+import REACT_APP_BASE_URL from '../config'
+const socket = io(REACT_APP_BASE_URL)
 import { UserDataContext } from './UserContext'
 const SocketProvider = ({children}) => {
   const { user , setUser } = useContext(UserDataContext)
