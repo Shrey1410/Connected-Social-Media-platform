@@ -43,7 +43,7 @@ exports.signup = async (req, res)=>{
     )
     return res.status(200).cookie("token", token, {
         httpOnly : true,
-        secure : false,
+        secure : true,
         maxAge : 24 * 60 * 60 * 1000 
     }).send({
         message : "Registered Successfully",
@@ -94,7 +94,7 @@ exports.login = async (req, res)=>{
     )
     return res.cookie("token", token, {
         httpOnly : true,
-        secure : false,
+        secure : true,
         maxAge : 24 * 60 * 60 * 1000 
     }).status(200).send({
         message : "Logged in Successfully",
@@ -141,7 +141,7 @@ exports.automaticlogin = async (req, res)=>{
 exports.logout = async(req, res)=>{
     return res.status(200).clearCookie("token", {
         httpOnly : true,
-        secure : false,
+        secure : true,
         maxAge : 24 * 60 * 60 * 1000 
     }).send({
         message : "Logged out Successfully"
