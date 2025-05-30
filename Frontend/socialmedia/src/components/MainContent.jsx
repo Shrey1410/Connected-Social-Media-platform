@@ -155,7 +155,7 @@ const MainContent = () => {
   }}>Post</button>
 </div>
       </div>
-        {posts.map((post) => {
+        {posts.length>0 && posts.map((post) => {
             return <Post key={post._id} post={post} />
           })}
         {
