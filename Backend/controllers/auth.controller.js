@@ -30,7 +30,7 @@ exports.signup = async (req, res)=>{
         fullname : fullname,
         username : username,
         email : email,
-        password :bcrypt.hashSync(password, SALT)
+        password :bcrypt.hashSync(password, parseInt(SALT))
     })
     const token = jwt.sign(
         {
