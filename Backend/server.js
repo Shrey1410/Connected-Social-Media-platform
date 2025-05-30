@@ -5,6 +5,7 @@ require('dotenv').config()
 const PORT = process.env.PORT
 const mongoose = require('mongoose')
 // const { URI } = require('./configs/db.config')
+const FRONTEND_URL = process.env.FRONTEND_URL
 const URI = process.env.URI
 const cookie = require('cookie-parser')
 const cookieParser = require('cookie-parser')
@@ -24,7 +25,7 @@ app.use(express.json())
 app.use(cookie())
 app.use(cookieParser())
 app.use(cors({
-    origin: 'http://localhost:5173',
+    origin: `${FRONTEND_URL}`,
     credentials: true,
 }))
 
