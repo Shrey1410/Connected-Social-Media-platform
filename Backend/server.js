@@ -26,6 +26,7 @@ app.use(cookie())
 app.use(cookieParser())
 app.use(cors({
     origin: `${FRONTEND_URL}`,
+    methods: ["GET", "POST"],
     credentials: true,
 }))
 

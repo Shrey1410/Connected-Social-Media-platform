@@ -6,6 +6,7 @@ function initializeSocket(server) {
     const io = new Server(server, {
         cors: {
             origin: `${FRONTEND_URL}`,
+            methods: ["GET", "POST"],
             credentials: true,
         },
     });
