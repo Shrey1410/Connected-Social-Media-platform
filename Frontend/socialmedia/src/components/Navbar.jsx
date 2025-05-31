@@ -4,6 +4,7 @@ import { UserDataContext } from '../context/UserContext'
 import axios from 'axios'
 import REACT_APP_BASE_URL from '../config'
 import Dropdownmenu from './Dropdownmenu'
+import { Link } from 'react-router-dom'
 const Navbar = () => {
 const { user } = useContext(UserDataContext)
 const [search, setSearch] = useState('')
@@ -50,10 +51,10 @@ useEffect(()=>{
       } 
     </div>
     {/* User Profile */}
-    <div className='flex items-center'>
+    <Link to='/profile' className='flex items-center'>
       <p className='hidden md:block px-3 font-sans font-semibold'>{user?.fullname}</p>
       <img className='rounded-full w-10 h-10' src={user?.profile_image || "https://static.thenounproject.com/png/3874124-200.png"} alt="User Profile" />
-    </div>
+    </Link>
   </div>
 )
 }

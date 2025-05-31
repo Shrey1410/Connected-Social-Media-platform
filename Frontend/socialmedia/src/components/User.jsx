@@ -7,6 +7,15 @@ import REACT_APP_BASE_URL from '../config'
 
 const User = (props) => {
   const {user, setUser} = useContext(UserDataContext)
+  let apiCalled = false;
+  const throttle = (fn, time) =>{
+    if(apiCalled) return;
+    apiCalled = true;
+    setTimeout(()=>{
+      fn()
+      apiCalled=false;
+    }, time);
+  }
   const handleAccept = async () => {
       try{
       const response = await axios.post(`${REACT_APP_BASE_URL}/friends/accept/${props.friend?.user_id?._id || props.friend?._id}`, {}, {
@@ -21,8 +30,7 @@ const User = (props) => {
       toast.error(err.response.data.message)
     }
     }
-    const handleonrequest = async (e) => {
-        e.preventDefault();
+    const handleonrequest = async () => {
         try {
             // Pass the friend_id as a URL parameter
             const friendId = props.friend?.user_id?._id || props.friend?._id;
@@ -59,7 +67,11 @@ const User = (props) => {
 
       </div>
       <div>
-      {props.listType==='friendsuggestions' ?(<button className='p-2 bg-blue-500 hover:bg-blue-800 text-lg text-white rounded-2xl' onClick={handleonrequest}>Request</button>) :(props.listType==='friendrequests'? (<button className='p-2 bg-blue-500 hover:bg-blue-800 text-lg text-white rounded-2xl' onClick={handleAccept}>Accept</button>):(<></>))}
+      {props.listType==='friendsuggestions' ?(<button className='p-2 bg-blue-500 hover:bg-blue-800 text-lg text-white rounded-2xl' onClick={(e)=>{
+        e.preventDefault()
+throttle(handleonrequest, 3000)}}>Request</button>) :(props.listType==='friendrequests'? (<button className='p-2 bg-blue-500 hover:bg-blue-800 text-lg text-white rounded-2xl' onClick={(e)=>{
+  e.preventDefault()
+  throttle(handleAccept, 3000)}}>Accept</button>):(<></>))}
       </div>
     </div>
     </div>

@@ -8,6 +8,15 @@ const Comments = (props) => {
   const [comment, setComment] = useState('')
   const [allcomments, setallcomments] = useState([])
   const [loading, setLoading] = useState(false)
+  let apiCalled = false;
+  const throttle = (fn, time) =>{
+    if(apiCalled) return;
+    apiCalled = true;
+    setTimeout(()=>{
+      fn()
+      apiCalled=false;
+    }, time);
+ }
   const fetchcomments = async ()=>{
       try{
       setLoading(true)
@@ -26,8 +35,7 @@ const Comments = (props) => {
   useEffect(()=>{
     fetchcomments()
   },[])
-  const handlecreatecomment = async (e)=>{
-    e.preventDefault()
+  const handlecreatecomment = async ()=>{
     try{
     const res = await axios.post(`${REACT_APP_BASE_URL}/createcomments/${props.postId}`,{
       comment : comment
@@ -54,7 +62,9 @@ const Comments = (props) => {
         }}/>
       </div>
       <div className='flex items-center justify-between py-2'>
-        <button className='bg-blue-500 text-white px-4 py-2 rounded-full' onClick={handlecreatecomment}>Comment</button>
+        <button className='bg-blue-500 text-white px-4 py-2 rounded-full' onClick={(e)=>{
+          e.preventDefault()
+          throttle(handlecreatecomment, 3000)}}>Comment</button>
         <button className='text-gray-500' onClick={(e)=>{
           e.preventDefault()
           console.log("helll")

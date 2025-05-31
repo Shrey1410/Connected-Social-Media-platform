@@ -204,7 +204,7 @@ const Profile = () => {
           {/* Bio */}
           <div className="flex flex-col px-5 md:px-10 my-4 space-y-4">
           <div className="flex items-center justify-start space-x-2">
-          <p className="w-40 font-semibold px-3">Upload Profile Image</p>
+          <p className="w-40 font-semibold px-3">Profile Image</p>
           <input
           type="file"
           className="w-full max-w-xs text-slate-500 font-medium text-base bg-gray-100
@@ -223,7 +223,7 @@ const Profile = () => {
          </div>
 
         <div className="flex items-center justify-start space-x-2">
-        <p className="w-40 px-3 font-semibold">Upload Cover Image</p>
+        <p className="w-40 px-3 font-semibold">Cover Image</p>
         <input
         type="file"
         className="w-full max-w-xs text-slate-500 font-medium text-base bg-gray-100

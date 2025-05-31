@@ -21,7 +21,15 @@ const Post = (props) => {
             }
         })
     }, [post])
-
+    let apiCalled = false;
+    const throttle = (fn, time) =>{
+    if(apiCalled) return;
+    apiCalled = true;
+    setTimeout(()=>{
+      fn()
+      apiCalled=false;
+    }, time);
+    }
     const handleonclick = async () => {
         const postId = post?._id;
         try{
@@ -72,7 +80,7 @@ const Post = (props) => {
                 <button className = {`py-1 px-4 rounded-2xl border-2 ${onlike ? "bg-blue-500" : "bg-white"}`} onClick={(e)=>{
                     e.preventDefault()
                     setOnlike(!onlike)
-                    handleonclick()
+                    throttle(handleonclick(), 3000)
                 }}>
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M3 12C3 11.0572 3 10.5858 3.29289 10.2929C3.58579 10 4.05719 10 5 10C5.94281 10 6.41421 10 6.70711 10.2929C7 10.5858 7 11.0572 7 12V19C7 19.9428 7 20.4142 6.70711 20.7071C6.41421 21 5.94281 21 5 21C4.05719 21 3.58579 21 3.29289 20.7071C3 20.4142 3 19.9428 3 19V12Z" stroke="black" strokeWidth="null" className="my-path"></path>

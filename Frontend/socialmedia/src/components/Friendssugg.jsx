@@ -7,8 +7,16 @@ import { Link } from 'react-router-dom';
 import REACT_APP_BASE_URL from '../config'
 const Friendssugg = (props) => {
   const {user, setUser} = useContext(UserDataContext)
-  const handleonrequest = async (e) => {
-    e.preventDefault();
+  let apiCalled = false;
+  const throttle = (fn, time) =>{
+    if(apiCalled) return;
+    apiCalled = true;
+    setTimeout(()=>{
+      fn()
+      apiCalled=false;
+    }, time);
+}
+  const handleonrequest = async () => {
     try {
         // Pass the friend_id as a URL parameter
         const friendId = props.friend._id;
@@ -36,7 +44,9 @@ const Friendssugg = (props) => {
       {props.friend.Online && <span className="w-2 h-2 bg-green-500 rounded-full inline-block"></span>}
       </div>
       <div>
-      <button className='p-2 bg-blue-500 text-sm font-semibold text-white rounded-2xl hover:bg-blue-800' onClick={handleonrequest}>Request</button>
+      <button className='p-2 bg-blue-500 text-sm font-semibold text-white rounded-2xl hover:bg-blue-800' onClick={(e)=>{
+        e.preventDefault()
+        throttle(handleonrequest, 3000)}}>Request</button>
       </div>
     </div>
   )

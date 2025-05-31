@@ -6,6 +6,15 @@ import { Link } from 'react-router-dom'
 import REACT_APP_BASE_URL from '../config'
 const Friendrequests = (props) => {
   const {user, setUser} = useContext(UserDataContext)
+  let apiCalled = false;
+  const throttle = (fn, time) =>{
+    if(apiCalled) return;
+    apiCalled = true;
+    setTimeout(()=>{
+      fn()
+      apiCalled=false;
+    }, time);
+}
   const handleAccept = async () => {
     try{
     const response = await axios.post(`${REACT_APP_BASE_URL}/friends/accept/${props.friend.user_id._id}`, {}, {
@@ -28,7 +37,9 @@ const Friendrequests = (props) => {
         {props.friend.user_id?.Online && <span className="w-2 h-2 bg-green-500 rounded-full inline-block"></span>}
       </div>
       <div>
-      <button className='p-2 bg-blue-500 text-sm font-semibold text-white rounded-2xl hover:bg-blue-800' onClick={handleAccept}>Accept</button>
+      <button className='p-2 bg-blue-500 text-sm font-semibold text-white rounded-2xl hover:bg-blue-800' onClick={(e)=>{
+        e.preventDefault()
+        throttle(handleAccept, 3000)}}>Accept</button>
       </div>
     </div>
   )
