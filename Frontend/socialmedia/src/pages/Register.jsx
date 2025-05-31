@@ -6,10 +6,12 @@ import { useContext } from 'react'
 import { UserDataContext } from '../context/UserContext'
 import { useEffect } from 'react'
 import REACT_APP_BASE_URL from '../config'
-
+import NProgress from 'nprogress'
 import { toast } from 'react-toastify'
+import 'nprogress/nprogress.css'
 const Register = () => {
   const [fullName, setFullName] = useState('')
+  NProgress.configure({ showSpinner: false })
   const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -31,6 +33,7 @@ const Register = () => {
       }
     }, [user])
   const handleonSubmit = async ()=>{
+    NProgress.start()
     if(password!== confirmPassword){
       alert("Password and Confirm Password do not match")
       return
@@ -52,6 +55,9 @@ const Register = () => {
     catch(err){
       console.log(err)
       toast.error(err.response.data.message)
+    }
+    finally{
+      NProgress.done()
     }
   }
 

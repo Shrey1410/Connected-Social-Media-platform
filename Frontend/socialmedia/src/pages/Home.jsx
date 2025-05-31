@@ -8,37 +8,102 @@ import { UserDataContext } from '../context/UserContext'
 import { useNavigate } from 'react-router-dom'
 import UserList from '../components/UserList'
 import { useState } from 'react'
+import { FaUserFriends, FaUserClock, FaUserPlus, FaUserCheck, FaSignOutAlt } from 'react-icons/fa'
+import REACT_APP_BASE_URL from '../config'
+import { toast } from 'react-toastify'
+import axios from 'axios'
+import { SocketDataContext } from '../context/SocketContext'
 const Home = () => {
-  const { user } = useContext(UserDataContext)
+  const { user , setUser} = useContext(UserDataContext)
+  const { socket } = useContext(SocketDataContext)
   const navigate = useNavigate()
   useEffect(()=>{
     if(!user) navigate('/')
   },[user])
   const [userList, setUserList] = useState(false)
   const [listType, setListType] = useState('')
+  const onhandlelogout = async (e) => {
+      e.preventDefault()
+      try{
+        const res = await axios.get(`${REACT_APP_BASE_URL}/logout`,
+          { withCredentials: true }
+        )
+        toast.success(res.data.message)
+        socket.emit('leave', {user : user.id})
+        setUser(null)
+        navigate('/')
+      }
+      catch(err){
+        console.log(err)
+        toast.error(err.response.data.message)
+  
+      }
+    }
   return (
     <div className='overflow-hidden h-screen flex flex-col'>
       <Navbar/>
-      <div className='flex justify-between items-center px-4 py-2 bg-white shadow-md'>
-        <div className='flex space-x-4 md:hidden'>
-          <button onClick={(e) =>{
-          e.preventDefault(); 
-          setListType('friends');
-          setUserList(!userList)}} className='px-2 py-1 bg-blue-500 text-sm hover:bg-blue-800 text-white rounded-2xl'>Friends</button>
-          <button onClick={(e) =>{
-          e.preventDefault();
-          setUserList(!userList)
-          setListType('pending')}} className='px-2 py-1 bg-blue-500 text-sm hover:bg-blue-800 text-white rounded-2xl'>Pending Request</button>
-          <button onClick={(e) =>{
-          e.preventDefault();
-           setUserList(!userList)
-          setListType('friendrequests')}} className='px-2 py-1 bg-blue-500 text-sm hover:bg-blue-800 text-white rounded-2xl'>Friend Request</button>
-          <button onClick={(e) =>{
-          e.preventDefault();
-           setUserList(!userList)
-          setListType('friendsuggestions')}} to='/' className='px-2 py-1 hover:bg-blue-800 bg-blue-500 text-sm text-white rounded-2xl'>Friend Suggestions</button>
-        </div>
-      </div>
+{/* Top Action Bar (Mobile) */}
+<div className='flex justify-between items-center px-4 py-3 bg-white shadow sticky top-0 z-10 md:hidden'>
+  <div className='flex gap-3'>
+    <button
+      title='Friends'
+      onClick={(e) =>{
+        e.preventDefault()
+        setUserList(!userList)
+        setListType('friends')
+      }}
+      className={`p-4 rounded-full transition ${
+        listType === 'friends' && userList ? 'bg-blue-700 text-white' : 'bg-blue-100 text-blue-700 hover:bg-blue-300'
+      }`}
+    >
+      <FaUserFriends size={18} />
+    </button>
+    <button
+      title='Pending Requests'
+      onClick={(e) => {
+        e.preventDefault()
+        setUserList(!userList)
+        setListType('pending')}}
+      className={`p-4 rounded-full transition ${
+        listType === 'pending' && userList ? 'bg-blue-700 text-white' : 'bg-blue-100 text-blue-700 hover:bg-blue-300'
+      }`}
+    >
+      <FaUserClock size={18} />
+    </button>
+    <button
+      title='Friend Requests'
+      onClick={(e) => {
+        e.preventDefault()
+        setUserList(!userList)
+        setListType('friendrequests')}}
+      className={`p-4 rounded-full transition ${
+        listType === 'friendrequests' && userList ? 'bg-blue-700 text-white' : 'bg-blue-100 text-blue-700 hover:bg-blue-300'
+      }`}
+    >
+      <FaUserPlus size={18} />
+    </button>
+    <button
+      title='Friend Suggestions'
+      onClick={(e) => {
+        e.preventDefault()
+        setUserList(!userList)
+        setListType('friendsuggestions')}}
+      className={`p-4 rounded-full transition ${
+        listType === 'friendsuggestions' && userList ? 'bg-blue-700 text-white' : 'bg-blue-100 text-blue-700 hover:bg-blue-300'
+      }`}
+    >
+      <FaUserCheck size={18} />
+    </button>
+    <button
+      title='Logout'
+      onClick={onhandlelogout}
+      className='p-4 bg-red-100 text-red-700 hover:bg-red-300 rounded-full transition'
+    >
+      <FaSignOutAlt size={18} />
+    </button>
+  </div>
+</div>
+
       <div>
         <div className='h-[1px] bg-gray-100 rounded-4xl'></div>
       </div>

@@ -6,11 +6,13 @@ import { UserDataContext } from '../context/UserContext'
 import { Link } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import REACT_APP_BASE_URL from '../config'
-
+import NProgress from 'nprogress'
+import 'nprogress/nprogress.css'
 const Login = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const {user, setUser} = useContext(UserDataContext)
+  NProgress.configure({ showSpinner: false })
   const navigate = useNavigate()
   useEffect(()=>{
     if(user){
@@ -27,6 +29,7 @@ const Login = () => {
     }, time);
   }
   const handleonSubmit = async ()=>{
+    NProgress.start()
     const data = {
       username : username,
       password : password,
@@ -44,6 +47,9 @@ const Login = () => {
     catch(err){
       console.log(err)
       toast.error(err.response.data.message)
+    }
+    finally{
+      NProgress.done()
     }
   }
 
