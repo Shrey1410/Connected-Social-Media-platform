@@ -1,33 +1,99 @@
-Project : Social Media Application (Connected)
-It is a social media application where one can share its post on the application can connect with other people on that application.
-Can see the post posted by the other people in their network also can Like and comment on their posts.
-We follow MVC Architecture Model(Database structure), View(Routes) and Controller(internal working or function)
-1. Data Models :
-   
-   1.1 Users : ->
-   fullname : Name of user required
-   username : Name also required as well as used for authentication(verifying the user).
-   password : minLength 8 and used for user authentication encryption required
-   emails : user email also required
-   coverimage url : Cloudinary (cloud service) 
-   profileimage : Cloudinary url 
-   friend_requests: [ ] array
-   friends: [ ] array
-   friend_request_sent: [ ] array
-   Online: True/False (socket programming to track user is online or offline)
-   
-   1.2 Posts : ->
-   CreatedBy : User who creates this post
-   description : Content of the Post
-   likes : Array [users who liked the post]
-   comments : [{usercreatedcomment, description}]
-   postimage : postimage url
-   
-2. Controllers :
-   2.1 Authentication controller : -> [login, signup, automaticlogin, logout]
-   2.2 Post Controller : -> [createpost, getpostbyuser, getallpost]
-   2.3 Comment Controller : -> [createcomment, getcomment]
-   2.4 Like Controller : -> [togglelike]
-   2.5 Profile Controller : -> [uploadthecoverimage, uploadtheprofileimage]
-   2.5 Friend Controller : -> [createfriendrequest, acceptfrienrequest, getfriendsuggestions, getfriendrequests, getfriends, getpendingrequest, searchfriends]
-   
+# 🌐 Social Media Application (Connected)
+
+This is a **Social Media Application** where users can:  
+- Share posts with text and images.  
+- Connect with other people (friend requests).  
+- See posts shared by their network.  
+- Like and comment on posts.  
+- Track online/offline status of friends (via socket programming).  
+
+The project follows **MVC Architecture**:  
+- **Model** → Database structure  
+- **View** → Routes  
+- **Controller** → Internal working / functions  
+
+---
+
+## 📂 Data Models  
+
+### 1.1 User Model  
+```json
+{
+  "fullName": "string (required)",
+  "username": "string (required, unique, used for authentication)",
+  "password": "string (minLength: 8, encrypted)",
+  "email": "string (required, unique)",
+  "coverImage": "string (Cloudinary URL)",
+  "profileImage": "string (Cloudinary URL)",
+  "friend_requests": ["UserIds"],
+  "friends": ["UserIds"],
+  "friend_request_sent": ["UserIds"],
+  "online": "boolean (true/false)"
+}
+```
+### 1.2 Post Model
+```json
+{
+  "createdBy": "UserId",
+  "description": "string (post content)",
+  "likes": ["UserIds"],
+  "comments": [
+    {
+      "userCreatedComment": "UserId",
+      "description": "string"
+    }
+  ],
+  "postImage": "string (Cloudinary URL)"
+}
+```
+
+## Controllers
+2.1 Authentication Controller
+
+2.1.1 login
+
+2.1.2 signup
+
+2.1.3 automaticLogin
+
+2.1.4 logout
+
+2.2 Post Controller
+
+2.2.1 createPost
+
+2.2.2 getPostByUser
+
+2.2.3 getAllPost
+
+2.3 Comment Controller
+
+2.3.1 createComment
+
+2.3.2 getComment
+
+2.4 Like Controller
+
+2.4.1 toggleLike
+
+2.5 Profile Controller
+
+2.5.1 uploadTheCoverImage
+
+2.5.2 uploadTheProfileImage
+
+2.6 Friend Controller
+
+2.6.1 createFriendRequest
+
+2.6.2 acceptFriendRequest
+
+2.6.3 getFriendSuggestions
+
+2.6.4 getFriendRequests
+
+2.6.5 getFriends
+
+2.6.6 getPendingRequest
+
+2.6.7 searchFriends
